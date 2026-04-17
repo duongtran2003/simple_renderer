@@ -1,0 +1,33 @@
+CompileFlags:
+  Add:
+    - -Wall
+    - -Wextra
+    - -Wpedantic
+    - -Wshadow
+    - -Wnon-virtual-dtor
+    - -Wcast-align
+    - -Wunused
+    - -Woverloaded-virtual
+    - -Wconversion
+    - -Wnull-dereference
+    - -Wdouble-promotion
+    - -Wformat=2
+  Remove:
+    - -Werror
+  # This tells clangd to look for compile_commands.json in the build folder
+  # You won't need the symlink (ln -s) if this is set correctly.
+  CompilationDatabase: build
+
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+Completion:
+  AllScopes: Yes
+  ArgumentLists: FullPlaceholders
+  HeaderInsertion: IWYU
+  CodePatterns: All
+  MacroFilter: ExactPrefix
+
+Index:
+  Background: Build
