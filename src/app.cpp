@@ -64,31 +64,30 @@ void App::init() {
         window->closeWindow();
         return;
       }
+    }
 
-      for (int pY = (int)boundingBox.x; pY <= (int)boundingBox.y; pY++) {
-        for (int pX = (int)boundingBox.z; pX <= (int)boundingBox.w; pX++) {
-          bool isInside =
-              isInsidePrimitive(primitive.v1.coords, primitive.v2.coords,
-                                primitive.v3.coords, glm::vec3(pX, pY, 0.0f));
+    for (int pY = (int)boundingBox.x; pY <= (int)boundingBox.y; pY++) {
+      for (int pX = (int)boundingBox.z; pX <= (int)boundingBox.w; pX++) {
+        bool isInside =
+            isInsidePrimitive(primitive.v1.coords, primitive.v2.coords,
+                              primitive.v3.coords, glm::vec3(pX, pY, 0.0f));
 
-          if (isInside) {
-            glm::vec3 barycentric = queryBarycentricCoords(
-                primitive.v1.coords, primitive.v2.coords, primitive.v3.coords,
-                glm::vec3(pX, pY, 0.0f));
-            glm::vec3 interpolatedColor = barycentric.x * primitive.v1.color +
-                                          barycentric.y * primitive.v2.color +
-                                          barycentric.z * primitive.v3.color;
-            Point p = {.x = pX,
-                       .y = pY,
-                       .color = glm::vec4(interpolatedColor, 255.0f)};
+        if (isInside) {
+          glm::vec3 barycentric = queryBarycentricCoords(
+              primitive.v1.coords, primitive.v2.coords, primitive.v3.coords,
+              glm::vec3(pX, pY, 0.0f));
+          glm::vec3 interpolatedColor = barycentric.x * primitive.v1.color +
+                                        barycentric.y * primitive.v2.color +
+                                        barycentric.z * primitive.v3.color;
+          Point p = {
+              .x = pX, .y = pY, .color = glm::vec4(interpolatedColor, 255.0f)};
 
-            window->putPixel(p);
-          }
+          window->putPixel(p);
         }
       }
-
-      window->swapFramebuffer();
     }
+
+    window->swapFramebuffer();
   }
 
   return;
