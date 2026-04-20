@@ -47,18 +47,18 @@ public:
   glm::mat4 getViewMatrix() const;
   glm::mat4 getProjectionMatrix() const;
 
-  void setPosition(glm::vec3 position);
-  void getDirection(glm::vec3 direction);
-  void setWorldUp(glm::vec3 worldUp);
+  Camera& setPosition(glm::vec3 position);
+  Camera& getDirection(glm::vec3 direction);
+  Camera& setWorldUp(glm::vec3 worldUp);
 
-  void setYaw(float yaw);
-  void setPitch(float pitch);
-  void setFov(float fov);
+  Camera& setYaw(float yaw);
+  Camera& setPitch(float pitch);
+  Camera& setFov(float fov);
 
-  void setWidth(float width);
-  void setHeight(float height);
-  void setNear(float near);
-  void setFar(float far);
+  Camera& setWidth(float width);
+  Camera& setHeight(float height);
+  Camera& setNear(float near);
+  Camera& setFar(float far);
 
   void processCameraMovement(Movement movement, double deltaTime);
   void processCameraAngle(glm::vec2 positionOffset);

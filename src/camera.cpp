@@ -1,5 +1,4 @@
 #include "camera.hpp"
-#include <algorithm>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -60,28 +59,50 @@ glm::mat4 Camera::getProjectionMatrix() const {
   return glm::perspective(fov, width / height, near, far);
 }
 
-void Camera::setPosition(glm::vec3 position) { this->position = position; }
-void Camera::getDirection(glm::vec3 direction) {
+Camera &Camera::setPosition(glm::vec3 position) {
+  this->position = position;
+  return *this;
+}
+Camera &Camera::getDirection(glm::vec3 direction) {
   this->direction = direction;
   updateCameraVectors();
+  return *this;
 }
-void Camera::setWorldUp(glm::vec3 worldUp) {
+Camera &Camera::setWorldUp(glm::vec3 worldUp) {
   this->worldUp = worldUp;
   updateCameraVectors();
+  return *this;
 }
-void Camera::setYaw(float yaw) {
+Camera &Camera::setYaw(float yaw) {
   this->yaw = yaw;
   updateCameraVectors();
+  return *this;
 }
-void Camera::setPitch(float pitch) {
+Camera &Camera::setPitch(float pitch) {
   this->pitch = pitch;
   updateCameraVectors();
+  return *this;
 }
-void Camera::setFov(float fov) { this->fov = fov; }
-void Camera::setWidth(float width) { this->width = width; }
-void Camera::setHeight(float height) { this->height = height; }
-void Camera::setNear(float near) { this->near = near; }
-void Camera::setFar(float far) { this->far = far; }
+Camera &Camera::setFov(float fov) {
+  this->fov = fov;
+  return *this;
+}
+Camera &Camera::setWidth(float width) {
+  this->width = width;
+  return *this;
+}
+Camera &Camera::setHeight(float height) {
+  this->height = height;
+  return *this;
+}
+Camera &Camera::setNear(float near) {
+  this->near = near;
+  return *this;
+}
+Camera &Camera::setFar(float far) {
+  this->far = far;
+  return *this;
+}
 
 void Camera::processCameraMovement(Movement movement, double deltaTime) {
   float velocity = 100.0f * deltaTime;
