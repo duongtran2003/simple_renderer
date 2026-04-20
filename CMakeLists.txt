@@ -15,6 +15,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp 
     src/window.cpp
     src/app.cpp
+    src/input.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 

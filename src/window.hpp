@@ -23,7 +23,7 @@ private:
 public:
   inline static constexpr int WIDTH = 800;
   inline static constexpr int HEIGHT = 600;
-  inline static std::string TITLE = "Simple Rasterizer";
+  inline static std::string TITLE = "Simple Renderer";
 
   Window(std::string title = TITLE, int windowW = WIDTH, int windowH = HEIGHT);
   void swapFramebuffer();

@@ -1,5 +1,7 @@
 #include "app.hpp"
 #include "SDL_events.h"
+#include "SDL_keycode.h"
+#include "input.hpp"
 #include "window.hpp"
 #include <glm/common.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -33,6 +35,7 @@ glm::vec4 getBoundingBox(Primitive primitive);
 App::App() {}
 void App::init() {
   Window *window = new Window("My simple renderer", 640, 480);
+  Input &input = Input::getInstance();
 
   std::vector<Vertex> vertices;
   vertices.push_back(
@@ -56,8 +59,10 @@ void App::init() {
 
   while (window->isWindowRunning()) {
     while (SDL_PollEvent(&e) != 0) {
-      if (e.type == SDL_QUIT) {
+      input.processInput(e);
+      if (input.getShouldQuit() || input.isKeyPressed(SDLK_ESCAPE)) {
         window->closeWindow();
+        return;
       }
 
       for (int pY = (int)boundingBox.x; pY <= (int)boundingBox.y; pY++) {
