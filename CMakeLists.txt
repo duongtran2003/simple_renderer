@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.15) # 3.15+ is better for modern vcpkg support
 
-project(SimpleRasterizer LANGUAGES CXX)
+project(SimpleRenderer LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -13,7 +13,8 @@ find_package(SDL2 CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME} 
     src/main.cpp 
-    src/renderer.cpp
+    src/window.cpp
+    src/app.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 

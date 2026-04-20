@@ -1,13 +1,14 @@
-#include "renderer.hpp"
+#include "window.hpp"
 #include "SDL.h"
 #include "SDL_pixels.h"
 #include "SDL_render.h"
 #include "SDL_video.h"
 #include <cstddef>
+#include <glm/ext/vector_float4.hpp>
 #include <string>
 
-namespace SimpleRasterizer {
-Renderer::Renderer(std::string title, int windowW, int windowH) {
+namespace SimpleRenderer {
+Window::Window(std::string title, int windowW, int windowH) {
   SDL_Init(SDL_INIT_VIDEO);
   window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, windowW, windowH, 0);
@@ -22,17 +23,17 @@ Renderer::Renderer(std::string title, int windowW, int windowH) {
   isRunning = true;
 }
 
-void Renderer::swapFramebuffer() {
+void Window::swapFramebuffer() {
   SDL_RenderClear(renderer);
   SDL_RenderCopy(renderer, framebuffer, NULL, NULL);
   SDL_RenderPresent(renderer);
 }
 
-void Renderer::closeWindow() { isRunning = false; }
+void Window::closeWindow() { isRunning = false; }
 
-bool Renderer::isWindowRunning() { return isRunning; }
+bool Window::isWindowRunning() { return isRunning; }
 
-Renderer::~Renderer() {
+Window::~Window() {
   if (framebuffer) {
     SDL_DestroyTexture(framebuffer);
   }
@@ -45,4 +46,20 @@ Renderer::~Renderer() {
 
   SDL_Quit();
 }
-} // namespace SimpleRasterizer
+
+void Window::putPixel(Point &point) {
+  unsigned char *pixels;
+  int pitch;
+  SDL_LockTexture(framebuffer, NULL, (void **)&pixels, &pitch);
+  int pixelStride = 4;
+
+  int pixelLocation = pitch * point.y + pixelStride * point.x;
+  pixels[pixelLocation] = (unsigned char)point.color.x;
+  pixels[pixelLocation + 1] = (unsigned char)point.color.x;
+  pixels[pixelLocation + 2] = (unsigned char)point.color.y;
+  pixels[pixelLocation + 3] = (unsigned char)point.color.z;
+  pixels[pixelLocation + 4] = (unsigned char)point.color.w;
+
+  SDL_UnlockTexture(framebuffer);
+}
+} // namespace SimpleRenderer
