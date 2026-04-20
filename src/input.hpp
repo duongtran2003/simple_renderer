@@ -13,18 +13,18 @@ public:
   Input(const Input &) = delete;
   Input &operator=(const Input &) = delete;
 
-  bool getShouldQuit();
+  bool getShouldQuit() const;
 
   void processInput(SDL_Event &e);
 
-  std::unordered_map<SDL_Keycode, bool> &getKeysPressed();
-  std::unordered_map<Uint16, bool> &getModifierKeysPressed();
+  const std::unordered_map<SDL_Keycode, bool> &getKeysPressed() const;
+  const std::unordered_map<Uint16, bool> &getModifierKeysPressed() const;
 
   bool isKeyPressed(SDL_Keycode key);
   bool isModifierKeyPressed(Uint16 key);
 
-  glm::vec2 getMousePos();
-  glm::vec2 getLastMousePos();
+  glm::vec2 getMousePos() const;
+  glm::vec2 getLastMousePos() const;
 
 private:
   Input();

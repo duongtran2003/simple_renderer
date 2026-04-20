@@ -52,8 +52,6 @@ void App::init() {
   };
 
   glm::vec4 boundingBox = getBoundingBox(primitive);
-  std::cout << boundingBox.x << " " << boundingBox.y << " " << boundingBox.z
-            << " " << boundingBox.w << "\n";
 
   SDL_Event e;
 

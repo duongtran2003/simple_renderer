@@ -26,9 +26,9 @@ public:
   inline static std::string TITLE = "Simple Renderer";
 
   Window(std::string title = TITLE, int windowW = WIDTH, int windowH = HEIGHT);
-  void swapFramebuffer();
+  void swapFramebuffer() const;
   void closeWindow();
-  bool isWindowRunning();
+  bool isWindowRunning() const;
   void putPixel(Point &point);
 };
 } // namespace SimpleRenderer

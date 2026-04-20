@@ -23,7 +23,7 @@ Window::Window(std::string title, int windowW, int windowH) {
   isRunning = true;
 }
 
-void Window::swapFramebuffer() {
+void Window::swapFramebuffer() const {
   SDL_RenderClear(renderer);
   SDL_RenderCopy(renderer, framebuffer, NULL, NULL);
   SDL_RenderPresent(renderer);

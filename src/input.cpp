@@ -4,24 +4,23 @@
 #include "SDL_stdinc.h"
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
-#include <iostream>
 #include <unordered_map>
 
 namespace SimpleRenderer {
 Input::Input() { shouldQuit = false; }
 
-bool Input::getShouldQuit() { return shouldQuit; }
+bool Input::getShouldQuit() const { return shouldQuit; }
 
 Input &Input::getInstance() {
   static Input instance;
   return instance;
 }
 
-std::unordered_map<SDL_Keycode, bool> &Input::getKeysPressed() {
+const std::unordered_map<SDL_Keycode, bool> &Input::getKeysPressed() const {
   return keysPressed;
 }
 
-std::unordered_map<Uint16, bool> &Input::getModifierKeysPressed() {
+const std::unordered_map<Uint16, bool> &Input::getModifierKeysPressed() const {
   return modifierKeysPressed;
 }
 
@@ -31,11 +30,15 @@ bool Input::isModifierKeyPressed(Uint16 key) {
   return modifierKeysPressed[key];
 }
 
-glm::vec2 Input::getMousePos() { return glm::vec2(mouseX, mouseY); }
+glm::vec2 Input::getMousePos() const { return glm::vec2(mouseX, mouseY); }
 
-glm::vec2 Input::getLastMousePos() { return glm::vec2(lastMouseX, lastMouseY); }
+glm::vec2 Input::getLastMousePos() const {
+  return glm::vec2(lastMouseX, lastMouseY);
+}
 
 void Input::processInput(SDL_Event &e) {
+  lastMouseX = mouseX;
+  lastMouseY = mouseY;
   switch (e.type) {
   case SDL_QUIT:
     shouldQuit = true;
@@ -47,8 +50,6 @@ void Input::processInput(SDL_Event &e) {
     keysPressed[e.key.keysym.sym] = false;
     break;
   case SDL_MOUSEMOTION:
-    lastMouseX = mouseX;
-    lastMouseY = mouseY;
     mouseX = e.motion.x;
     mouseY = e.motion.y;
     break;
