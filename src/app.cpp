@@ -108,7 +108,10 @@ glm::vec3 queryBarycentricCoords(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
 bool isInsidePrimitive(glm::vec3 v1, glm::vec3 v2, glm::vec3 v3,
                        glm::vec3 queryPoint) {
   glm::vec3 bary = queryBarycentricCoords(v1, v2, v3, queryPoint);
-  if (bary.x < 0.0f || bary.y < 0.0f || bary.z < 0.0f) {
+
+  float precisionTolerance = -0.0001f;
+  if (bary.x < precisionTolerance || bary.y < precisionTolerance ||
+      bary.z < precisionTolerance) {
     return false;
   }
 
