@@ -58,7 +58,6 @@ void Window::putPixel(Point &point) {
   pixels[pixelLocation + 1] = (unsigned char)point.color.x;
   pixels[pixelLocation + 2] = (unsigned char)point.color.y;
   pixels[pixelLocation + 3] = (unsigned char)point.color.z;
-  pixels[pixelLocation + 4] = (unsigned char)point.color.w;
 
   SDL_UnlockTexture(framebuffer);
 }

@@ -10,7 +10,6 @@
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
-#include <iostream>
 #include <vector>
 
 namespace SimpleRenderer {
