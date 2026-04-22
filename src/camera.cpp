@@ -52,11 +52,11 @@ float Camera::getNear() const { return near; }
 float Camera::getFar() const { return far; }
 
 glm::mat4 Camera::getViewMatrix() const {
-  return glm::lookAt(position, direction, up);
+  return glm::lookAt(position, position + direction, up);
 }
 
 glm::mat4 Camera::getProjectionMatrix() const {
-  return glm::perspective(fov, width / height, near, far);
+  return glm::perspective(glm::radians(fov), width / height, near, far);
 }
 
 Camera &Camera::setPosition(glm::vec3 position) {
@@ -105,7 +105,7 @@ Camera &Camera::setFar(float far) {
 }
 
 void Camera::processCameraMovement(Movement movement, double deltaTime) {
-  float velocity = 100.0f * deltaTime;
+  float velocity = 5.0f * deltaTime;
   switch (movement) {
   case Forward:
     position += direction * velocity;
@@ -130,10 +130,10 @@ void Camera::processCameraMovement(Movement movement, double deltaTime) {
   }
 }
 
-void Camera::processCameraAngle(glm::vec2 positionOffset) {
+void Camera::processCameraAngle(glm::vec2 positionOffset, double deltaTime) {
   glm::vec2 sensitivity = glm::vec2(10.0f, 6.0f);
-  glm::vec2 offset = glm::vec2(positionOffset.x * sensitivity.x,
-                               -positionOffset.y * sensitivity.y);
+  glm::vec2 offset = glm::vec2(positionOffset.x * sensitivity.x * deltaTime,
+                               -positionOffset.y * sensitivity.y * deltaTime);
 
   yaw += offset.x;
   pitch += offset.y;

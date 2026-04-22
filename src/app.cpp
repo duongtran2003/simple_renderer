@@ -1,6 +1,8 @@
 #include "app.hpp"
 #include "SDL_events.h"
 #include "SDL_keycode.h"
+#include "SDL_mouse.h"
+#include "SDL_stdinc.h"
 #include "SDL_timer.h"
 #include "camera.hpp"
 #include "hello_world_triangle_pipeline.hpp"
@@ -40,6 +42,8 @@ void App::init() {
   const int WINDOW_H = 480;
 
   Window *window = new Window("My simple renderer", WINDOW_W, WINDOW_H);
+  SDL_SetRelativeMouseMode(SDL_TRUE);
+
   Input &input = Input::getInstance();
 
   std::vector<float> rawData = {
@@ -104,7 +108,7 @@ void App::init() {
       .setWorldUp(glm::vec3(0.0f, 1.0f, 0.0f))
       .setYaw(-90.0f)
       .setPitch(0.0f)
-      .setFov(90.0f)
+      .setFov(70.0f)
       .setWidth(WINDOW_W)
       .setHeight(WINDOW_H)
       .setNear(1.0f)
@@ -122,6 +126,25 @@ void App::init() {
       }
     }
 
+    if (input.isKeyPressed(SDLK_w)) {
+      camera->processCameraMovement(Camera::Forward, deltaTime);
+    } else if (input.isKeyPressed(SDLK_s)) {
+      camera->processCameraMovement(Camera::Backward, deltaTime);
+    } else if (input.isKeyPressed(SDLK_a)) {
+      camera->processCameraMovement(Camera::Left, deltaTime);
+    } else if (input.isKeyPressed(SDLK_d)) {
+      camera->processCameraMovement(Camera::Right, deltaTime);
+    } else if (input.isKeyPressed(SDLK_SPACE)) {
+      camera->processCameraMovement(Camera::Up, deltaTime);
+    } else if (input.isKeyPressed(SDLK_LCTRL)) {
+      camera->processCameraMovement(Camera::Down, deltaTime);
+    }
+
+    glm::vec2 mouseRel = input.getMouseRel();
+    if (mouseRel.x != 0.0f || mouseRel.y != 0.0f) {
+      camera->processCameraAngle(mouseRel, deltaTime);
+    }
+
     totalTime += static_cast<float>(deltaTime);
 
     glm::mat4 view = camera->getViewMatrix();
@@ -129,7 +152,7 @@ void App::init() {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
     model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-    model = glm::rotate(model, totalTime, glm::vec3(0.4f, 0.7f, 0.33f));
+    model = glm::rotate(model, totalTime, glm::vec3(0.66f, 0.33f, 0.99f));
 
     helloWorldTrianglePipeline->setUniform("u_viewMatrix", view);
     helloWorldTrianglePipeline->setUniform("u_projectionMatrix", projection);
@@ -140,7 +163,9 @@ void App::init() {
     helloWorldTrianglePipeline->render(rawData);
     window->swapFramebuffer(helloWorldTrianglePipeline->getDrawnFrame());
 
-    std::cout << "Frametime: " << deltaTime << "ms\n";
+    input.clearMouseRel();
+
+    // std::cout << "Frametime: " << deltaTime << "ms\n";
   }
 
   return;

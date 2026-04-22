@@ -30,15 +30,9 @@ bool Input::isModifierKeyPressed(Uint16 key) {
   return modifierKeysPressed[key];
 }
 
-glm::vec2 Input::getMousePos() const { return glm::vec2(mouseX, mouseY); }
-
-glm::vec2 Input::getLastMousePos() const {
-  return glm::vec2(lastMouseX, lastMouseY);
-}
+glm::vec2 Input::getMouseRel() const { return mouseRelative; }
 
 void Input::processInput(SDL_Event &e) {
-  lastMouseX = mouseX;
-  lastMouseY = mouseY;
   switch (e.type) {
   case SDL_QUIT:
     shouldQuit = true;
@@ -50,11 +44,13 @@ void Input::processInput(SDL_Event &e) {
     keysPressed[e.key.keysym.sym] = false;
     break;
   case SDL_MOUSEMOTION:
-    mouseX = e.motion.x;
-    mouseY = e.motion.y;
+    mouseRelative.x += e.motion.xrel;
+    mouseRelative.y += e.motion.yrel;
     break;
   default:
     break;
   }
 }
+
+void Input::clearMouseRel() { mouseRelative = glm::vec2(0.0f, 0.0f); }
 } // namespace SimpleRenderer

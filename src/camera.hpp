@@ -61,7 +61,7 @@ public:
   Camera& setFar(float far);
 
   void processCameraMovement(Movement movement, double deltaTime);
-  void processCameraAngle(glm::vec2 positionOffset);
+  void processCameraAngle(glm::vec2 positionOffset, double deltaTime);
 
 private:
   glm::vec3 position;
