@@ -307,10 +307,6 @@ Pipeline<VertexType, VertexShaderOutput>::rasterize(
       glm::max(ss.v1.coords.x, glm::max(ss.v2.coords.x, ss.v3.coords.x));
   right = glm::min((int)bufferSize.x - 1, (int)right);
 
-  float invW1 = 1.0f / primitive.v1.coords.w;
-  float invW2 = 1.0f / primitive.v2.coords.w;
-  float invW3 = 1.0f / primitive.v3.coords.w;
-
   std::vector<RasterizerOutput> fragments;
 
   for (int pY = (int)upper; pY <= (int)lower; pY++) {
@@ -343,18 +339,15 @@ Pipeline<VertexType, VertexShaderOutput>::rasterize(
         continue;
       }
 
-      float interpolatedInversedW = (invW1 * u) + (invW2 * v) + (invW3 * w);
+      float z1 = primitive.v1.coords.z * u;
+      float z2 = primitive.v2.coords.z * v;
+      float z3 = primitive.v3.coords.z * w;
 
-      float z1 = primitive.v1.coords.z * invW1;
-      float z2 = primitive.v2.coords.z * invW2;
-      float z3 = primitive.v3.coords.z * invW3;
-
-      float interpolatedZ = (z1 * u + z2 * v + z3 * w) / interpolatedInversedW;
+      float interpolatedZ = z1 + z2 + z3;
 
       RasterizerOutput output = {
           .screenCoords = glm::vec2(pX, pY),
           .interpolatedZ = interpolatedZ,
-          .interpolatedInversedW = interpolatedInversedW,
           .vsOut1 = primitive.v1.vsOut,
           .vsOut2 = primitive.v2.vsOut,
           .vsOut3 = primitive.v3.vsOut,
