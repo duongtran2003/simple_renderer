@@ -95,11 +95,11 @@ protected:
   virtual std::vector<VertexType>
   assembleInput(const std::vector<float> &rawInput);
 
-  virtual std::vector<VertexShaderOutput>
+  virtual std::vector<VertexShaderOut>
   vertexShader(const std::vector<VertexType> &vertices);
 
   std::vector<Primitive>
-  assemblePrimitives(const std::vector<VertexShaderOutput> &vertices);
+  assemblePrimitives(const std::vector<VertexShaderOut> &vertices);
 
   virtual glm::vec4 fragmentShader(const RasterizerOutput &fragment);
 
@@ -157,8 +157,10 @@ Pipeline<VertexType, VertexShaderOutput>::setDepthTestFunc(DepthFunc func) {
 template <typename VertexType, typename VertexShaderOutput>
 Pipeline<VertexType, VertexShaderOutput> &
 Pipeline<VertexType, VertexShaderOutput>::setBufferSize(int width, int height) {
-  bufferSize.x = width;
-  bufferSize.y = height;
+  bufferSize = glm::vec2(width, height);
+  colorBuffer.assign(width * height, clearColor);
+  depthBuffer.assign(width * height, FLT_MAX);
+
   return *this;
 }
 
@@ -205,10 +207,14 @@ Pipeline<VertexType, VertexShaderOutput>::getUniform(std::string name) {
 template <typename VertexType, typename VertexShaderOutput>
 std::vector<typename Pipeline<VertexType, VertexShaderOutput>::Primitive>
 Pipeline<VertexType, VertexShaderOutput>::assemblePrimitives(
-    const std::vector<VertexShaderOutput> &vertices) {
+    const std::vector<VertexShaderOut> &vertices) {
   std::vector<Primitive> primitives;
 
-  for (int i = 0; i < vertices.length() - 2; i += 3) {
+  if (vertices.size() < 3) {
+    return primitives;
+  }
+
+  for (int i = 0; i < vertices.size() - 2; i += 3) {
     Primitive primitive = {
         .v1 = vertices[i],
         .v2 = vertices[i + 1],
@@ -358,7 +364,7 @@ template <typename VertexType, typename VertexShaderOutput>
 void Pipeline<VertexType, VertexShaderOutput>::render(
     const std::vector<float> &rawInput) {
   std::vector<VertexType> vertices = assembleInput(rawInput);
-  std::vector<VertexShaderOutput> vertexOut = vertexShader(vertices);
+  std::vector<VertexShaderOut> vertexOut = vertexShader(vertices);
   std::vector<Primitive> primitives = assemblePrimitives(vertexOut);
 
   for (const Primitive &primitive : primitives) {
@@ -368,7 +374,7 @@ void Pipeline<VertexType, VertexShaderOutput>::render(
       if (isDepthTestEnable) {
         if (isEarlyZEnable) {
           bool isPassedDepthTest =
-              depthTest(fragment.interpolatedZ, fragments.screenCoords);
+              depthTest(fragment.interpolatedZ, fragment.screenCoords);
 
           if (!isPassedDepthTest) {
             continue;
@@ -378,7 +384,7 @@ void Pipeline<VertexType, VertexShaderOutput>::render(
         } else {
           fragColor = fragmentShader(fragment);
           bool isPassedDepthTest =
-              depthTest(fragment.interpolatedZ, fragments.screenCoords);
+              depthTest(fragment.interpolatedZ, fragment.screenCoords);
 
           if (!isPassedDepthTest) {
             continue;
@@ -388,9 +394,16 @@ void Pipeline<VertexType, VertexShaderOutput>::render(
         fragColor = fragmentShader(fragment);
       }
 
-      writeColor(fragColor, fragments.screenCoords);
+      writeColor(fragColor, fragment.screenCoords);
     }
   }
+}
+
+template <typename VertexType, typename VertexShaderOutput>
+void Pipeline<VertexType, VertexShaderOutput>::writeColor(glm::vec4 color,
+                                                          glm::vec2 location) {
+  int colorIndex = location.y * bufferSize.x + location.x;
+  colorBuffer[colorIndex] = color;
 }
 
 template <typename VertexType, typename VertexShaderOutput>
@@ -408,10 +421,14 @@ SDL_Texture *Pipeline<VertexType, VertexShaderOutput>::getDrawnFrame() {
     glm::vec4 color = colorBuffer[i];
 
     int pixelLocation = pitch * y + pixelStride * x;
-    pixels[pixelLocation] = (unsigned char)color.x;
-    pixels[pixelLocation + 1] = (unsigned char)color.y;
-    pixels[pixelLocation + 2] = (unsigned char)color.z;
-    pixels[pixelLocation + 3] = (unsigned char)color.w;
+    pixels[pixelLocation] =
+        (unsigned char)(glm::clamp(color.r, 0.0f, 1.0f) * 255.0f);
+    pixels[pixelLocation + 1] =
+        (unsigned char)(glm::clamp(color.g, 0.0f, 1.0f) * 255.0f);
+    pixels[pixelLocation + 2] =
+        (unsigned char)(glm::clamp(color.b, 0.0f, 1.0f) * 255.0f);
+    pixels[pixelLocation + 3] =
+        (unsigned char)(glm::clamp(color.a, 0.0f, 1.0f) * 255.0f);
   }
 
   SDL_UnlockTexture(drawnFrame);
