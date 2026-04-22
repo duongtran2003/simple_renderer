@@ -64,7 +64,7 @@ public:
   Pipeline &setDepthMask(bool isEnable);
   Pipeline &setEarlyZ(bool isEnable);
   Pipeline &setDepthTestFunc(DepthFunc func);
-  Pipeline &setBufferSize(int width, int height);
+  Pipeline &setBufferSize(int width, int height, SDL_Renderer *renderer);
   Pipeline &setClearColor(glm::vec4 color);
   Pipeline &clearDepthBuffer();
   Pipeline &clearColorBuffer();
@@ -114,12 +114,8 @@ Pipeline<VertexType, VertexShaderOutput>::Pipeline(SDL_Renderer *renderer) {
   isDepthTestEnable = false;
   isEarlyZEnable = false;
   depthMask = false;
-  setBufferSize(BUFFER_W, BUFFER_H);
+  setBufferSize(BUFFER_W, BUFFER_H, renderer);
   setClearColor(CLEAR_COLOR);
-  drawnFrame =
-      SDL_CreateTexture(renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA32,
-                        SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING,
-                        bufferSize.x, bufferSize.y);
 }
 
 template <typename VertexType, typename VertexShaderOutput>
@@ -157,10 +153,16 @@ Pipeline<VertexType, VertexShaderOutput>::setDepthTestFunc(DepthFunc func) {
 
 template <typename VertexType, typename VertexShaderOutput>
 Pipeline<VertexType, VertexShaderOutput> &
-Pipeline<VertexType, VertexShaderOutput>::setBufferSize(int width, int height) {
+Pipeline<VertexType, VertexShaderOutput>::setBufferSize(
+    int width, int height, SDL_Renderer *renderer) {
   bufferSize = glm::vec2(width, height);
   colorBuffer.assign(width * height, clearColor);
   depthBuffer.assign(width * height, FLT_MAX);
+
+  drawnFrame =
+      SDL_CreateTexture(renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA32,
+                        SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING,
+                        bufferSize.x, bufferSize.y);
 
   return *this;
 }

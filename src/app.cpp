@@ -10,6 +10,7 @@
 #include "pipeline.hpp"
 #include "window.hpp"
 #include <cstdint>
+#include <cstdio>
 #include <ctime>
 #include <glm/common.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -19,7 +20,6 @@
 #include <glm/geometric.hpp>
 #include <glm/glm.hpp>
 #include <glm/trigonometric.hpp>
-#include <iostream>
 #include <vector>
 
 namespace SimpleRenderer {
@@ -38,8 +38,8 @@ void App::calculateDeltaTime() {
 }
 
 void App::init() {
-  const int WINDOW_W = 640;
-  const int WINDOW_H = 480;
+  const int WINDOW_W = 400;
+  const int WINDOW_H = 300;
 
   Window *window = new Window("My simple renderer", WINDOW_W, WINDOW_H);
   SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -99,7 +99,7 @@ void App::init() {
       .setDepthMask(true)
       .setEarlyZ(true)
       .setDepthTestFunc(HelloWorldTrianglePipeline::Pipeline::Less)
-      .setBufferSize(WINDOW_W, WINDOW_H)
+      .setBufferSize(WINDOW_W, WINDOW_H, window->getRenderer())
       .setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
   Camera *camera = new Camera();
@@ -108,7 +108,7 @@ void App::init() {
       .setWorldUp(glm::vec3(0.0f, 1.0f, 0.0f))
       .setYaw(-90.0f)
       .setPitch(0.0f)
-      .setFov(70.0f)
+      .setFov(74.0f)
       .setWidth(WINDOW_W)
       .setHeight(WINDOW_H)
       .setNear(1.0f)
@@ -152,7 +152,7 @@ void App::init() {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
     model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-    model = glm::rotate(model, totalTime, glm::vec3(0.66f, 0.33f, 0.99f));
+    model = glm::rotate(model, totalTime, glm::vec3(0.1f, 0.2f, 0.3f));
 
     helloWorldTrianglePipeline->setUniform("u_viewMatrix", view);
     helloWorldTrianglePipeline->setUniform("u_projectionMatrix", projection);
@@ -165,7 +165,7 @@ void App::init() {
 
     input.clearMouseRel();
 
-    // std::cout << "Frametime: " << deltaTime << "ms\n";
+    printf("Frametime: %.3fms - FPS: %.0f\n", deltaTime, 1.0 / deltaTime);
   }
 
   return;
