@@ -1,8 +1,8 @@
 #pragma once
 
-namespace SimpleRasterizer {
+namespace SimpleRenderer {
 struct Point {
   int x;
   int y;
 };
-} // namespace SimpleRasterizer
+} // namespace SimpleRenderer

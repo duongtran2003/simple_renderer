@@ -17,7 +17,7 @@ add_executable(${PROJECT_NAME}
     src/app.cpp
     src/input.cpp
     src/camera.cpp
-    src/pipeline.cpp
+    src/hello_world_triangle_pipeline.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 

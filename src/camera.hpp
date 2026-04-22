@@ -48,7 +48,7 @@ public:
   glm::mat4 getProjectionMatrix() const;
 
   Camera& setPosition(glm::vec3 position);
-  Camera& getDirection(glm::vec3 direction);
+  Camera& setDirection(glm::vec3 direction);
   Camera& setWorldUp(glm::vec3 worldUp);
 
   Camera& setYaw(float yaw);

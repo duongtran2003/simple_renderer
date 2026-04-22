@@ -15,7 +15,6 @@ class Window {
 private:
   SDL_Window *window;
   SDL_Renderer *renderer;
-  SDL_Texture *framebuffer;
   bool isRunning;
 
   ~Window();
@@ -26,9 +25,9 @@ public:
   inline static std::string TITLE = "Simple Renderer";
 
   Window(std::string title = TITLE, int windowW = WIDTH, int windowH = HEIGHT);
-  void swapFramebuffer() const;
+  void swapFramebuffer(SDL_Texture *frame) const;
   void closeWindow();
   bool isWindowRunning() const;
-  void putPixel(Point &point);
+  SDL_Renderer *getRenderer() const;
 };
 } // namespace SimpleRenderer

@@ -63,7 +63,7 @@ Camera &Camera::setPosition(glm::vec3 position) {
   this->position = position;
   return *this;
 }
-Camera &Camera::getDirection(glm::vec3 direction) {
+Camera &Camera::setDirection(glm::vec3 direction) {
   this->direction = direction;
   updateCameraVectors();
   return *this;

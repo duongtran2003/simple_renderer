@@ -9,13 +9,14 @@
 #include <glm/ext/vector_float4.hpp>
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <string>
 #include <unistd.h>
 #include <unordered_map>
 #include <variant>
 #include <vector>
 
-namespace SimpleRasterizer {
+namespace SimpleRenderer {
 template <typename VertexType, typename VertexShaderOutput> class Pipeline {
 public:
   using UniformValue = std::variant<float, int, bool, glm::vec2, glm::vec3,
@@ -58,7 +59,7 @@ public:
       glm::vec4(0.0f, 0.0f, 0.0f, 255.0f);
 
   Pipeline(SDL_Renderer *renderer);
-  ~Pipeline();
+  virtual ~Pipeline();
   Pipeline &setDepthTest(bool isEnable);
   Pipeline &setDepthMask(bool isEnable);
   Pipeline &setEarlyZ(bool isEnable);
@@ -93,15 +94,15 @@ protected:
   UniformValue getUniform(std::string name);
 
   virtual std::vector<VertexType>
-  assembleInput(const std::vector<float> &rawInput);
+  assembleInput(const std::vector<float> &rawInput) = 0;
 
   virtual std::vector<VertexShaderOut>
-  vertexShader(const std::vector<VertexType> &vertices);
+  vertexShader(const std::vector<VertexType> &vertices) = 0;
 
   std::vector<Primitive>
   assemblePrimitives(const std::vector<VertexShaderOut> &vertices);
 
-  virtual glm::vec4 fragmentShader(const RasterizerOutput &fragment);
+  virtual glm::vec4 fragmentShader(const RasterizerOutput &fragment) = 0;
 
   bool depthTest(float zValue, glm::vec2 location);
   std::vector<RasterizerOutput> rasterize(const Primitive &primitive);
@@ -116,7 +117,7 @@ Pipeline<VertexType, VertexShaderOutput>::Pipeline(SDL_Renderer *renderer) {
   setBufferSize(BUFFER_W, BUFFER_H);
   setClearColor(CLEAR_COLOR);
   drawnFrame =
-      SDL_CreateTexture(renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA8888,
+      SDL_CreateTexture(renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA32,
                         SDL_TextureAccess::SDL_TEXTUREACCESS_STREAMING,
                         bufferSize.x, bufferSize.y);
 }
@@ -434,4 +435,4 @@ SDL_Texture *Pipeline<VertexType, VertexShaderOutput>::getDrawnFrame() {
   SDL_UnlockTexture(drawnFrame);
   return drawnFrame;
 }
-} // namespace SimpleRasterizer
+} // namespace SimpleRenderer
