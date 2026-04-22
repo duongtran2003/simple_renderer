@@ -46,9 +46,14 @@ HelloWorldTrianglePipeline::vertexShader(
     const std::vector<HelloWorldTriangleVertex> &vertices) {
   std::vector<HelloWorldTrianglePipeline::VertexShaderOut> out;
 
+  glm::mat4 projection = std::get<glm::mat4>(getUniform("u_projectionMatrix"));
+  glm::mat4 view = std::get<glm::mat4>(getUniform("u_viewMatrix"));
+  glm::mat4 model = std::get<glm::mat4>(getUniform("u_modelMatrix"));
+
   for (const auto &v : vertices) {
     HelloWorldTrianglePipeline::VertexShaderOut vOut = {
-        .coords = glm::vec4(v.position, 1.0f), .vsOut = {.color = v.color}};
+        .coords = projection * view * model * glm::vec4(v.position, 1.0f),
+        .vsOut = {.color = v.color}};
 
     out.push_back(vOut);
   }

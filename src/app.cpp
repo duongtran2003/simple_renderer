@@ -7,10 +7,10 @@
 #include "input.hpp"
 #include "pipeline.hpp"
 #include "window.hpp"
-#include <chrono>
 #include <cstdint>
 #include <ctime>
 #include <glm/common.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/ext/vector_float4.hpp>
 #include <glm/fwd.hpp>
@@ -43,8 +43,47 @@ void App::init() {
   Input &input = Input::getInstance();
 
   std::vector<float> rawData = {
-      0.0f, 0.5f, 0.0f, 1.0f, 0.0f,  0.0f, 1.0f, -0.5f, -0.5f, 0.0f, 0.0f,
-      1.0f, 0.0f, 1.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  1.0f,  1.0f,
+      -0.5f, 0.5f,  -0.5f, 1.0f,   0.647f, 0.0f,   1.0f, // A
+      -0.5f, 0.5f,  0.5f,  1.0f,   0.647f, 0.0f,   1.0f, // B
+      0.5f,  0.5f,  0.5f,  1.0f,   0.647f, 0.0f,   1.0f, // C
+      -0.5f, 0.5f,  -0.5f, 1.0f,   0.647f, 0.0f,   1.0f, // A
+      0.5f,  0.5f,  0.5f,  1.0f,   0.647f, 0.0f,   1.0f, // C
+      0.5f,  0.5f,  -0.5f, 1.0f,   0.647f, 0.0f,   1.0f, // D
+
+      -0.5f, -0.5f, 0.5f,  0.0f,   1.0f,   0.498f, 1.0f, // A
+      -0.5f, -0.5f, -0.5f, 0.0f,   1.0f,   0.498f, 1.0f, // B
+      0.5f,  -0.5f, -0.5f, 0.0f,   1.0f,   0.498f, 1.0f, // C
+      -0.5f, -0.5f, 0.5f,  0.0f,   1.0f,   0.498f, 1.0f, // A
+      0.5f,  -0.5f, -0.5f, 0.0f,   1.0f,   0.498f, 1.0f, // C
+      0.5f,  -0.5f, 0.5f,  0.0f,   1.0f,   0.498f, 1.0f, // D
+
+      -0.5f, 0.5f,  0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // A
+      -0.5f, -0.5f, 0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // B
+      0.5f,  -0.5f, 0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // C
+      -0.5f, 0.5f,  0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // A
+      0.5f,  -0.5f, 0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // C
+      0.5f,  0.5f,  0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // D
+
+      0.5f,  0.5f,  -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // A
+      0.5f,  -0.5f, -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // B
+      -0.5f, -0.5f, -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // C
+      0.5f,  0.5f,  -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // A
+      -0.5f, -0.5f, -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // C
+      -0.5f, 0.5f,  -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // D
+
+      -0.5f, 0.5f,  -0.5f, 0.678f, 0.847f, 0.902f, 1.0f, // A
+      -0.5f, -0.5f, -0.5f, 0.678f, 0.847f, 0.902f, 1.0f, // B
+      -0.5f, -0.5f, 0.5f,  0.678f, 0.847f, 0.902f, 1.0f, // C
+      -0.5f, 0.5f,  -0.5f, 0.678f, 0.847f, 0.902f, 1.0f, // A
+      -0.5f, -0.5f, 0.5f,  0.678f, 0.847f, 0.902f, 1.0f, // C
+      -0.5f, 0.5f,  0.5f,  0.678f, 0.847f, 0.902f, 1.0f, // D
+
+      0.5f,  0.5f,  0.5f,  0.8f,   0.76f,  0.89f,  1.0f, // A
+      0.5f,  -0.5f, 0.5f,  0.8f,   0.76f,  0.89f,  1.0f, // B
+      0.5f,  -0.5f, -0.5f, 0.8f,   0.76f,  0.89f,  1.0f, // C
+      0.5f,  0.5f,  0.5f,  0.8f,   0.76f,  0.89f,  1.0f, // A
+      0.5f,  -0.5f, -0.5f, 0.8f,   0.76f,  0.89f,  1.0f, // C
+      0.5f,  0.5f,  -0.5f, 0.8f,   0.76f,  0.89f,  1.0f, // D
   };
 
   SDL_Event e;
@@ -54,7 +93,7 @@ void App::init() {
 
   helloWorldTrianglePipeline->setDepthTest(true)
       .setDepthMask(true)
-      .setEarlyZ(false)
+      .setEarlyZ(true)
       .setDepthTestFunc(HelloWorldTrianglePipeline::Pipeline::Less)
       .setBufferSize(WINDOW_W, WINDOW_H)
       .setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
@@ -71,6 +110,8 @@ void App::init() {
       .setNear(1.0f)
       .setFar(100.0f);
 
+  float totalTime = 0.0f;
+
   while (window->isWindowRunning()) {
     calculateDeltaTime();
     while (SDL_PollEvent(&e) != 0) {
@@ -80,6 +121,19 @@ void App::init() {
         return;
       }
     }
+
+    totalTime += static_cast<float>(deltaTime);
+
+    glm::mat4 view = camera->getViewMatrix();
+    glm::mat4 projection = camera->getProjectionMatrix();
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+    model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
+    model = glm::rotate(model, totalTime, glm::vec3(0.4f, 0.7f, 0.33f));
+
+    helloWorldTrianglePipeline->setUniform("u_viewMatrix", view);
+    helloWorldTrianglePipeline->setUniform("u_projectionMatrix", projection);
+    helloWorldTrianglePipeline->setUniform("u_modelMatrix", model);
 
     helloWorldTrianglePipeline->clearColorBuffer();
     helloWorldTrianglePipeline->clearDepthBuffer();
