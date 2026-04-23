@@ -10,11 +10,12 @@ namespace SimpleRenderer {
 
 struct HelloWorldTriangleVertex {
   glm::vec3 position;
-  glm::vec4 color;
+  glm::vec3 normal;
 };
 
 struct HelloWorldTriangleVertexShaderOutput {
-  glm::vec4 color;
+  glm::vec3 worldSpaceCoords;
+  glm::vec3 normal;
 };
 
 class HelloWorldTrianglePipeline

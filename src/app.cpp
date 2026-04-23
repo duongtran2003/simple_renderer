@@ -42,8 +42,8 @@ void App::calculateDeltaTime() {
 }
 
 void App::init() {
-  const int WINDOW_W = 800;
-  const int WINDOW_H = 600;
+  const int WINDOW_W = 640;
+  const int WINDOW_H = 480;
 
   Window *window = new Window("My simple renderer", WINDOW_W, WINDOW_H);
   SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -63,6 +63,15 @@ void App::init() {
       .setDepthTestFunc(HelloWorldTrianglePipeline::Pipeline::Less)
       .setBufferSize(WINDOW_W, WINDOW_H, window->getRenderer())
       .setClearColor(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+  glm::vec3 lightPosition = glm::vec3(3.0f, 3.0f, 0.0f);
+  helloWorldTrianglePipeline->setUniform("u_lightPosition", lightPosition);
+
+  glm::vec3 cubeColor = glm::vec3(0.6f, 0.6f, 0.6f);
+  helloWorldTrianglePipeline->setUniform("u_cubeColor", cubeColor);
+
+  float cubeShininess = 128.0f;
+  helloWorldTrianglePipeline->setUniform("u_shininess", cubeShininess);
 
   Camera *camera = new Camera();
   camera->setPosition(glm::vec3(0.0f, 0.0f, 3.0f))
@@ -97,11 +106,13 @@ void App::init() {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
     model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-    model = glm::rotate(model, totalTime, glm::vec3(0.1f, 0.2f, 0.3f));
+    model = glm::rotate(model, totalTime, glm::vec3(0.3f, 0.2f, 0.1f));
 
     helloWorldTrianglePipeline->setUniform("u_viewMatrix", view);
     helloWorldTrianglePipeline->setUniform("u_projectionMatrix", projection);
     helloWorldTrianglePipeline->setUniform("u_modelMatrix", model);
+    helloWorldTrianglePipeline->setUniform("u_cameraPosition",
+                                           camera->getPosition());
 
     helloWorldTrianglePipeline->clearColorBuffer();
     helloWorldTrianglePipeline->clearDepthBuffer();
@@ -141,46 +152,82 @@ void handleCameraInput(SimpleRenderer::Camera &camera,
 
 std::vector<float> getCubeData() {
   return {
-      -0.5f, 0.5f,  -0.5f, 1.0f,   0.647f, 0.0f,   1.0f, // A
-      -0.5f, 0.5f,  0.5f,  1.0f,   0.647f, 0.0f,   1.0f, // B
-      0.5f,  0.5f,  0.5f,  1.0f,   0.647f, 0.0f,   1.0f, // C
-      -0.5f, 0.5f,  -0.5f, 1.0f,   0.647f, 0.0f,   1.0f, // A
-      0.5f,  0.5f,  0.5f,  1.0f,   0.647f, 0.0f,   1.0f, // C
-      0.5f,  0.5f,  -0.5f, 1.0f,   0.647f, 0.0f,   1.0f, // D
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,
+      0.0f, // A
+      -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,
+      0.0f, // B
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,
+      0.0f, // C
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,
+      0.0f, // A
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,
+      0.0f, // C
+      0.5f,  0.5f,  -0.5f, 0.0f,  1.0f,
+      0.0f, // D
 
-      -0.5f, -0.5f, 0.5f,  0.0f,   1.0f,   0.498f, 1.0f, // A
-      -0.5f, -0.5f, -0.5f, 0.0f,   1.0f,   0.498f, 1.0f, // B
-      0.5f,  -0.5f, -0.5f, 0.0f,   1.0f,   0.498f, 1.0f, // C
-      -0.5f, -0.5f, 0.5f,  0.0f,   1.0f,   0.498f, 1.0f, // A
-      0.5f,  -0.5f, -0.5f, 0.0f,   1.0f,   0.498f, 1.0f, // C
-      0.5f,  -0.5f, 0.5f,  0.0f,   1.0f,   0.498f, 1.0f, // D
+      -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f,
+      0.0f, // A
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f,
+      0.0f, // B
+      0.5f,  -0.5f, -0.5f, 0.0f,  -1.0f,
+      0.0f, // C
+      -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f,
+      0.0f, // A
+      0.5f,  -0.5f, -0.5f, 0.0f,  -1.0f,
+      0.0f, // C
+      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f,
+      0.0f, // D
 
-      -0.5f, 0.5f,  0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // A
-      -0.5f, -0.5f, 0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // B
-      0.5f,  -0.5f, 0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // C
-      -0.5f, 0.5f,  0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // A
-      0.5f,  -0.5f, 0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // C
-      0.5f,  0.5f,  0.5f,  0.0f,   0.502f, 0.502f, 1.0f, // D
+      -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,
+      1.0f, // A
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,
+      1.0f, // B
+      0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,
+      1.0f, // C
+      -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,
+      1.0f, // A
+      0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,
+      1.0f, // C
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,
+      1.0f, // D
 
-      0.5f,  0.5f,  -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // A
-      0.5f,  -0.5f, -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // B
-      -0.5f, -0.5f, -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // C
-      0.5f,  0.5f,  -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // A
-      -0.5f, -0.5f, -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // C
-      -0.5f, 0.5f,  -0.5f, 1.0f,   0.553f, 0.631f, 1.0f, // D
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,
+      -1.0f, // A
+      0.5f,  -0.5f, -0.5f, 0.0f,  0.0f,
+      -1.0f, // B
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,
+      -1.0f, // C
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,
+      -1.0f, // A
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,
+      -1.0f, // C
+      -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,
+      -1.0f, // D
 
-      -0.5f, 0.5f,  -0.5f, 0.678f, 0.847f, 0.902f, 1.0f, // A
-      -0.5f, -0.5f, -0.5f, 0.678f, 0.847f, 0.902f, 1.0f, // B
-      -0.5f, -0.5f, 0.5f,  0.678f, 0.847f, 0.902f, 1.0f, // C
-      -0.5f, 0.5f,  -0.5f, 0.678f, 0.847f, 0.902f, 1.0f, // A
-      -0.5f, -0.5f, 0.5f,  0.678f, 0.847f, 0.902f, 1.0f, // C
-      -0.5f, 0.5f,  0.5f,  0.678f, 0.847f, 0.902f, 1.0f, // D
+      -0.5f, 0.5f,  -0.5f, -1.0f, 0.0f,
+      0.0f, // A
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,
+      0.0f, // B
+      -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f,
+      0.0f, // C
+      -0.5f, 0.5f,  -0.5f, -1.0f, 0.0f,
+      0.0f, // A
+      -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f,
+      0.0f, // C
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,
+      0.0f, // D
 
-      0.5f,  0.5f,  0.5f,  0.8f,   0.76f,  0.89f,  1.0f, // A
-      0.5f,  -0.5f, 0.5f,  0.8f,   0.76f,  0.89f,  1.0f, // B
-      0.5f,  -0.5f, -0.5f, 0.8f,   0.76f,  0.89f,  1.0f, // C
-      0.5f,  0.5f,  0.5f,  0.8f,   0.76f,  0.89f,  1.0f, // A
-      0.5f,  -0.5f, -0.5f, 0.8f,   0.76f,  0.89f,  1.0f, // C
-      0.5f,  0.5f,  -0.5f, 0.8f,   0.76f,  0.89f,  1.0f, // D
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
+      0.0f, // A
+      0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,
+      0.0f, // B
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,
+      0.0f, // C
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,
+      0.0f, // A
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,
+      0.0f, // C
+      0.5f,  0.5f,  -0.5f, 1.0f,  0.0f,
+      0.0f, // D
   };
 }
